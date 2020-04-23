@@ -25,9 +25,10 @@ const get = async (id) => {
         }    
     }
 const store = async (user) => {
+    const { name, username, email, phone, document_id } = user
     try {
         const { rows } = await Pool.query(
-            `SELECT ${id} FROM users`
+            `INSERT INTO users (name, username, email, phone, document_id) VALUES ($1, $2, $3, $4, $5) RETURNING *` [name, username, email, phone, document_id]
         );
         } catch (err) {
             return {

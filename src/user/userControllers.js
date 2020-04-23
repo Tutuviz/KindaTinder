@@ -1,21 +1,41 @@
 const User = require ("./userModel")
 
-const getUserProfile = async => {
+const getUserProfile = async (req, res) => {
+    
+}
+const getProfile = async (req, res) => {
+    
+}
+const createUser = async (req, res) => {
+    const { name, username = "", email = "", phone = "", document_id = "" } = req.body;
+
+    const user = {
+        name,
+        username,
+        email,
+        phone,
+        document_id,
+    };
+    
+    const response = await User.store({ ...user, password_hash });
+
+    if (!response.length  || response.error) {
+        return res.json({
+            error: 503,
+            message: 'Internal Error'
+        });
+    }
+
+    return res.json({ ...user, id: response[0].id, response: response });
 
 }
-const getProfile = async => {
+const updateUserProfile = async (req, res) => {
     
 }
-const createUser = async => {
+const confirmUser = async (req, res) => {
     
 }
-const updateUserProfile = async => {
-    
-}
-const confirmUser = async => {
-    
-}
-const disableUser = async => {
+const disableUser = async (req, res) => {
     
 }
 
