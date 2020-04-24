@@ -7,7 +7,7 @@ const getProfile = async (req, res) => {
     
 }
 const createUser = async (req, res) => {
-    const { name, username = "", email = "", phone = "", document_id = "" } = req.body;
+    const { name, username, email, phone, document_id, password_hash } = req.body;
 
     const user = {
         name,
@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
         phone,
         document_id,
     };
-    
+
     const response = await User.store({ ...user, password_hash });
 
     if (!response.length  || response.error) {
