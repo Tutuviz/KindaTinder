@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(60) NOT NULL,
     phone VARCHAR(12) NOT NULL,
     document_id VARCHAR(11) NOT NULL,
-    google_id VARCHAR(120) NOT NULL,
-    facebook_id VARCHAR(120) NOT NULL,
+    google_id VARCHAR(120),
+    facebook_id VARCHAR(120),
     deleted_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
