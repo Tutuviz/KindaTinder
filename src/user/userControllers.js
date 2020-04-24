@@ -8,8 +8,8 @@ const getProfile = async (req, res) => {
 
     const response = await User.get(id);
     const {name, username, email, phone} = response[0];
-    
-    return res.json ({id, name, username, email, phone});
+
+    return res.json ({name, username, email, phone, id});
 }
 
 const createUser = async (req, res) => {
