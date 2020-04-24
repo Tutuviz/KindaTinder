@@ -4,10 +4,16 @@ const getUserProfile = async (req, res) => {
     
 }
 const getProfile = async (req, res) => {
+    const id = req.params.id;
+
+    const response = await User.get(id);
+    const {name, username, email, phone} = response[0];
     
+    return res.json ({id, name, username, email, phone});
 }
+
 const createUser = async (req, res) => {
-    const { name, username, email, phone, document_id, password_hash } = req.body;
+    const { name, username, email, phone, document_id, google_id, facebook_id, password_hash } = req.body;
 
     const user = {
         name,
@@ -15,6 +21,8 @@ const createUser = async (req, res) => {
         email,
         phone,
         document_id,
+        google_id, 
+        facebook_id
     };
 
     const response = await User.store({ ...user, password_hash });
@@ -26,9 +34,10 @@ const createUser = async (req, res) => {
         });
     }
 
-    return res.json({ ...user, id: response[0].id, response: response });
+    return res.json({ ...user, id: response[0].id});
 
 }
+
 const updateUserProfile = async (req, res) => {
     
 }

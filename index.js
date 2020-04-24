@@ -10,7 +10,7 @@ server.get ("/", (req, res) => {
     res.send("Hello World");
 });
 
-server.use ("/users/me", controllers.getUserProfile);
+server.use ("/users/:id", controllers.getProfile);
 server.use ("/users", middleware.encryptPassword, controllers.createUser);
 
 
