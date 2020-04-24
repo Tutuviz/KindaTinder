@@ -1,19 +1,13 @@
 const express = require ("express");
 const { PORT } = require ("./config/config");
-const controllers = require ("./src/user/userControllers");
-const middleware = require ("./src/user/userMiddleware");
+const Routes = require ("./routes");
 const server = express();
 
 server.use(express.json());
 
-server.get ("/", (req, res) => {
-    res.send("Hello World");
-});
-
-server.use ("/users/:id", controllers.getProfile);
-server.use ("/users", middleware.encryptPassword, controllers.createUser);
-
+server.use (Routes);
 
 server.listen (PORT, () => {
     console.log (`Server rodando na porta ${PORT}`);
 })
+
