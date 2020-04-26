@@ -1,17 +1,20 @@
 const { Router } = require("express");
 
-const middleware = require ("./src/user/userMiddleware");
-const controllers = require ("./src/user/userControllers");
+const userMiddleware = require ("./src/user/userMiddleware");
+const userControllers = require ("./src/user/userControllers");
+
+const sessionMiddleware = require ("./src/session/sessionMiddleware");
+const sessionController = require ("./src/session/sessionControllers");
 
 const routes = Router();
 
-routes.post ("/users", middleware.encryptPassword, controllers.createUser);
-routes.get ("/users/:id", controllers.getProfile);
+routes.post ("/users", userMiddleware.encryptPassword, userControllers.createUser);
+routes.get ("/users/:id", userControllers.getProfile);
 
 routes.get ("/users/me", (req, res) => {
     res.send("Em Manutenção");
 });
-rotes.put ("/users/me", (req, res) => {
+routes.put ("/users/me", (req, res) => {
     res.send("Em Manutenção");
 });
 routes.put ("/users/me/confirm", (req, res) => {
@@ -20,6 +23,9 @@ routes.put ("/users/me/confirm", (req, res) => {
 routes.put ("/users/me/disable", (req, res) => {
     res.send("Em Manutenção");
 });
+
+
+routes.post ("/auth", sessionController.auth);
 
 
 module.exports = routes;
