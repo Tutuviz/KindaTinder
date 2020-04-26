@@ -1,7 +1,7 @@
 const User = require ("./userModel")
 
 const getUserProfile = async (req, res) => {
-    
+    //Fazer o session
 }
 const getProfile = async (req, res) => {
     const id = req.params.id;
@@ -39,13 +39,13 @@ const createUser = async (req, res) => {
 }
 
 const updateUserProfile = async (req, res) => {
-    
+    //Fazer o session
 }
 const confirmUser = async (req, res) => {
-    
+    //Fazer o session
 }
 const disableUser = async (req, res) => {
-    
+    //Fazer o session
 }
 
 module.exports = { getUserProfile, getProfile, createUser, updateUserProfile, confirmUser, disableUser }
