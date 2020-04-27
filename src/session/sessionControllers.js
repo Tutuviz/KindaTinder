@@ -22,7 +22,7 @@ const auth = async (req, res) => {
     const passwordMatch = await verifyPassword(password, response[0].password_hash);
 
     if (passwordMatch) {  
-        jwt.sign(response[0].id, SECRET, {expiresIn}, (err, token) => {
+        jwt.sign(response[0].id, SECRET, (err, token) => {
             return res.json({
                 token,
             });
