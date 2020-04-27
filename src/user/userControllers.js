@@ -1,13 +1,19 @@
 const User = require ("./userModel")
 
 const getUserProfile = async (req, res) => {
-    //Fazer o session
+    const id = req.body.id;
+    
+    const response = await User.getMyself(id);
+    const { name, username, email, phone } = response[0];
+
+    return res.json ({name, username, email, phone, id});
 }
+
 const getProfile = async (req, res) => {
     const id = req.params.id;
 
     const response = await User.get(id);
-    const {name, username, email, phone} = response[0];
+    const { name, username, email, phone } = response[0];
 
     return res.json ({name, username, email, phone, id});
 }
@@ -39,13 +45,60 @@ const createUser = async (req, res) => {
 }
 
 const updateUserProfile = async (req, res) => {
-    //Fazer o session
+    const id = req.body.id;
+    const { name, username, email, phone, document_id, google_id, facebook_id, password_hash } = req.body;
+
+    const user = {
+        name, 
+        username, 
+        email,
+        phone,
+        document_id,
+        google_id,
+        facebook_id,
+
+    }
+
+    const response = await User.update({...user, password_hash}, id)
+
+    if (!response.length  || response.error) {
+        return res.json({
+            error: 503,
+            message: 'Internal Error'
+        });
+    }
+
+    return res.json( user )
+
 }
+
 const confirmUser = async (req, res) => {
-    //Fazer o session
+    const id = req.body.id;
+
 }
+
 const disableUser = async (req, res) => {
-    //Fazer o session
+    const id = req.body.id;
+
+    const response = await User.disable(id);
+
+    if (!response.length  || response.error) {
+        return res.json({
+            error: response.error || 503,
+            message: response.message || "Internal Error"
+        });
+    }
+
+    const { name, username, email, phone } = response[0];
+    return res.json({ 
+        message: "User deleted",
+        data: {
+            name, 
+            username, 
+            email, 
+            phone
+        }
+    });
 }
 
 module.exports = { getUserProfile, getProfile, createUser, updateUserProfile, confirmUser, disableUser }

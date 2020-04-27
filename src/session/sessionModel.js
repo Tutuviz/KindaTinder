@@ -1,9 +1,9 @@
 const Pool = require ("../../db/db");
 
-const getId = async (email) => {
+const verify = async (email) => {
     try {
         const { rows } = await Pool.query(
-            'SELECT id FROM users WHERE email = $1', [email]
+            'SELECT id, password_hash FROM users WHERE email = $1', [email]
         );
         return rows
     } catch (err) {
@@ -14,4 +14,4 @@ const getId = async (email) => {
     }   
 }
 
-module.exports = { getId }
+module.exports = { verify }
