@@ -8,24 +8,17 @@ const sessionController = require ("./src/session/sessionControllers");
 
 const routes = Router();
 
-routes.post ("/users", userMiddleware.encryptPassword, userControllers.createUser);
-routes.get ("/users/:id", userControllers.getProfile);
+routes.post("/users", userMiddleware.encryptPassword, userControllers.createUser);              
 
-routes.get ("/users/me", (req, res) => {
-    res.send("Em Manutenção");
-});
-routes.put ("/users/me", (req, res) => {
-    res.send("Em Manutenção");
-});
-routes.put ("/users/me/confirm", (req, res) => {
-    res.send("Em Manutenção");
-});
-routes.put ("/users/me/disable", (req, res) => {
-    res.send("Em Manutenção");
-});
+routes.get("/users/me", sessionMiddleware.verifyToken, userControllers.getUserProfile);         
+routes.get("/users/:id", userControllers.getProfile);                                           
+
+routes.put("/users/me", sessionMiddleware.verifyToken, userMiddleware.encryptPassword, userControllers.updateUserProfile);
+routes.put("/users/me/confirm", sessionMiddleware.verifyToken, userControllers.confirmUser);    //Manutencao
+routes.put("/users/me/disable", sessionMiddleware.verifyToken, userControllers.disableUser);    
 
 
-routes.post ("/auth", sessionController.auth);
+routes.post("/auth", sessionController.auth);                                                   
 
 
 module.exports = routes;
