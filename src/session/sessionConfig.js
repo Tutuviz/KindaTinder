@@ -1,3 +1,4 @@
 module.exports = {
-    SECRET: "segredo"
+    SECRET: "segredo",
+    ExpiresIn: "7d"
 }
