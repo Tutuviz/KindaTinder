@@ -7,12 +7,12 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(40) NOT NULL UNIQUE,
     password_hash VARCHAR(60) NOT NULL,
     phone VARCHAR(12) NOT NULL,
-    document_id VARCHAR(11) NOT NULL,
+    document_id VARCHAR(11),
     google_id VARCHAR(120),
     facebook_id VARCHAR(120),
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    deleted_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 SELECT * FROM users
