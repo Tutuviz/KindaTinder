@@ -86,7 +86,7 @@ const update = async (user, id)=> {
     }
     try {
         const { rows } = await Pool.query(
-            'UPDATE users SET name = $2, username = $3, email = $4, phone = $5, password_hash = $6, document_id =$7 WHERE id = $1 RETURNING *', [id, name, username, email, phone, password_hash, document_id ]
+            'UPDATE users SET name = $2, username = $3, email = $4, phone = $5, password_hash = $6, document_id =$7, updated_at = NOW() WHERE id = $1 RETURNING *', [id, name, username, email, phone, password_hash, document_id ]
         );
         return rows;
         } catch (err) {

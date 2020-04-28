@@ -4,7 +4,9 @@
   "description": "Criacão de um Tinder personalizado",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r dotenv/config index.js",
+    "migrate:windows": "SET DATABASE_URL=postgres://postgres:mypw@192.168.99.100/postgres&& node-pg-migrate"
   },
   "repository": {
     "type": "git",
@@ -19,8 +21,12 @@
   "homepage": "https://github.com/Tutuviz/KindaTinder#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.0.3"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^4.6.2"
   }
 }

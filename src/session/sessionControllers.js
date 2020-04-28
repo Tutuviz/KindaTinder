@@ -1,7 +1,6 @@
 const bcrypt = require ("bcryptjs");
 const jwt = require ("jsonwebtoken");
 const Session = require ("./sessionModel")
-const { SECRET } = require ("./sessionConfig");
 
 const verifyPassword = async (password, hash) => {
     return bcrypt.compare(password, hash);
@@ -22,7 +21,7 @@ const auth = async (req, res) => {
     const passwordMatch = await verifyPassword(password, response[0].password_hash);
 
     if (passwordMatch) {  
-        jwt.sign(response[0].id, SECRET, (err, token) => {
+        jwt.sign(response[0].id, process.env.SECRET, (err, token) => {
             return res.json({
                 token,
             });
