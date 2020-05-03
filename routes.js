@@ -6,9 +6,12 @@ const userControllers = require ("./src/user/userControllers");
 const sessionMiddleware = require ("./src/session/sessionMiddleware");
 const sessionController = require ("./src/session/sessionControllers");
 
+const uploadMiddleware = require ("./src/utils/upload/multer")
+
 const routes = Router();
 
 routes.post("/users", userMiddleware.encryptPassword, userControllers.createUser);              
+routes.post("/users/upload", sessionMiddleware.verifyToken, uploadMiddleware.uploadFile, userControllers.uploadPicture);
 
 routes.get("/users/me", sessionMiddleware.verifyToken, userControllers.getUserProfile);         
 routes.get("/users/:id", userControllers.getProfile);                                           
