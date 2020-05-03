@@ -1,4 +1,4 @@
-const Pool = require ("../../db/db");
+const Pool = require ("../utils/db/db");
 
 const verify = async (email) => {
     try {

@@ -1,4 +1,4 @@
-const Pool = require ("../../db/db");
+const Pool = require ("../utils/db/db");
 
 const getMyself = async (id) => {
     try {
@@ -132,4 +132,18 @@ const disable = async (id)=> {
     }
 }
 
-module.exports = { getMyself, get, store, update, confirm, disable }
+const upload = async (url) => {
+    try {
+        const { rows } = await Pool.query(
+            'INSERT INTO users_pictures url = $1 RETURNING *', [url]
+        )
+        return rows;
+    } catch (err) {
+        return {
+            error: 503,
+            message: "Internal Error",
+        }
+    }
+}
+
+module.exports = { getMyself, get, store, update, confirm, disable, upload }
