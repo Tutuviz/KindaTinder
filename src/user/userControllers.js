@@ -117,4 +117,17 @@ const disableUser = async (req, res) => {
     });
 }
 
-module.exports = { getUserProfile, getProfile, createUser, updateUserProfile, confirmUser, disableUser }
+const uploadPicture = async (req, res) => {
+    const id = req.body.id;
+    const { file } = req;
+    const response = await User.upload (file);
+
+    if (!response || response.error) {
+        return res.json ({
+            error: 503,
+            message: "Internal Error",
+        });
+    }
+}
+
+module.exports = { getUserProfile, getProfile, createUser, updateUserProfile, confirmUser, disableUser, uploadPicture }
