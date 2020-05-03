@@ -1,2 +1,2 @@
 # KindaTinder
-Criacão de um Tinder personalizado
+Criação de um Tinder personalizado
