@@ -1,21 +1,21 @@
-const jwt = require ("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+
 const verifyToken = (req, res, next) => {
-    
-    const authorization = req.headers.authorization;
-    
-    if (!authorization) {
-        return res.json ({
-            error: 401,
-            message: 'Unauthorized',
-        });
-    };
-    const bearer = authorization.split (" ");
-    const token = bearer[1];
+	const { authorization } = req.headers;
 
-    req.body.id = jwt.decode(token) 
+	if (!authorization) {
+		return res.json({
+			error: 401,
+			message: 'Unauthorized',
+		});
+	}
+	const bearer = authorization.split(' ');
+	const token = bearer[1];
 
-    return next();
-}
+	req.body.id = jwt.decode(token);
+
+	return next();
+};
 
 
-module.exports = { verifyToken }
+module.exports = { verifyToken };
