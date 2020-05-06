@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable no-unused-expressions */
 exports.shorthands = undefined;
 
 exports.up = (pgm) => {
@@ -21,8 +23,9 @@ exports.up = (pgm) => {
 		deleted_at: { type: 'TIMESTAMP', default: null },
 		created_at: { type: 'TIMESTAMP', default: pgm.func('NOW()') },
 		updated_at: { type: 'TIMESTAMP', default: pgm.func('NOW()') },
+		// eslint-disable-next-line no-sequences
 	}),
-	{ ifNotExists: true };
+		{ ifNotExists: true };
 };
 
 exports.down = (pgm) => {
