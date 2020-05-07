@@ -1,36 +1,38 @@
 {
-  "name": "KindaTinder",
-  "version": "1.0.0",
-  "description": "Criacão de um Tinder personalizado",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r dotenv/config index.js",
-    "migrate:windows": "SET DATABASE_URL=postgres://postgres:mypw@192.168.99.100/postgres&& node-pg-migrate"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Tutuviz/KindaTinder.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Tutuviz/KindaTinder/issues"
-  },
-  "homepage": "https://github.com/Tutuviz/KindaTinder#readme",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "multer": "^1.4.2",
-    "pg": "^8.0.3"
-  },
-  "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "node-pg-migrate": "^4.6.2"
-  }
+	"name": "KindaTinder",
+	"version": "1.0.0",
+	"description": "Criacão de um Tinder personalizado",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node -r dotenv/config index.js",
+		"migrate": "SET DATABASE_URL=postgres://postgres:mypw@192.168.99.100/postgres&& node-pg-migrate"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Tutuviz/KindaTinder.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Tutuviz/KindaTinder/issues"
+	},
+	"homepage": "https://github.com/Tutuviz/KindaTinder#readme",
+	"dependencies": {
+		"aws-sdk": "^2.671.0",
+		"bcryptjs": "^2.4.3",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
+		"multer": "^1.4.2",
+		"multer-s3": "^2.9.0",
+		"pg": "^8.0.3"
+	},
+	"devDependencies": {
+		"eslint": "^6.8.0",
+		"eslint-config-airbnb-base": "^14.1.0",
+		"eslint-plugin-import": "^2.20.2",
+		"node-pg-migrate": "^4.6.2"
+	}
 }
