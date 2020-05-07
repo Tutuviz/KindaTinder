@@ -12,9 +12,7 @@ const getUserProfile = async (req, res) => {
 		});
 	}
 
-	const {
-		name, username, email, phone,
-	} = response;
+	const { name, username, email, phone } = response;
 
 	return res.json({
 		name,
@@ -37,9 +35,7 @@ const getProfile = async (req, res) => {
 		});
 	}
 
-	const {
-		name, username, email, phone,
-	} = response;
+	const { name, username, email, phone } = response;
 
 	return res.json({
 		name,
@@ -141,9 +137,7 @@ const disableUser = async (req, res) => {
 		});
 	}
 
-	const {
-		name, username, email, phone,
-	} = response;
+	const { name, username, email, phone } = response;
 	return res.json({
 		message: 'User deleted',
 		data: {
@@ -171,11 +165,50 @@ const uploadPicture = async (req, res) => {
 	});
 };
 
+const updateMyProfile = async (req, res) => {
+	const { id } = req.body;
+	const {
+		description = null,
+		lives_in = null,
+		latitude = null,
+		longitude = null,
+		school = null,
+		work = null,
+		show_location = null,
+		birthday = null,
+	} = req.body;
+
+	const user = User.get(id);
+
+	const data = {
+		description: description || user.description,
+		lives_in: lives_in || user.lives_in,
+		latitude: latitude || user.latitude,
+		longitude: longitude || user.longitude,
+		school: school || user.school,
+		work: work || user.work,
+		show_location: show_location || user.show_location,
+		birthday: birthday || user.birthday,
+	};
+
+	const response = await User.update(data, id);
+
+	if (response.error || !response.length) {
+		return res.json({
+			error: response.error || 503,
+			message: response.message || 'Internal Error',
+		});
+	}
+
+	return res.json(data);
+};
+
 module.exports = {
 	getUserProfile,
 	getProfile,
 	createUser,
 	updateUserProfile,
+	updateMyProfile,
 	confirmUser,
 	disableUser,
 	uploadPicture,

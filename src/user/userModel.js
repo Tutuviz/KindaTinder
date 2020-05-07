@@ -103,16 +103,14 @@ const store = async (user) => {
 };
 
 const update = async (user, id) => {
-	const {
-		name, username, email, phone, document_id, password_hash,
-	} = user;
+	const { name, username, email, phone, document_id, password_hash } = user;
 	if (
 		!name
-    || !username
-    || !email
-    || !phone
-    || !document_id
-    || !password_hash
+		|| !username
+		|| !email
+		|| !phone
+		|| !document_id
+		|| !password_hash
 	) {
 		return {
 			error: 400,
@@ -174,9 +172,10 @@ const upload = async (url) => {
 	try {
 		const {
 			rows,
-		} = await Pool.query('INSERT INTO users_pictures url = $1 RETURNING *', [
-			url,
-		]);
+		} = await Pool.query(
+			'INSERT INTO users_pictures url = $1 RETURNING *',
+			[url],
+		);
 		return rows;
 	} catch (err) {
 		return DEFAULT_ERR;
