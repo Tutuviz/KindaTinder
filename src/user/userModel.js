@@ -104,22 +104,9 @@ const store = async (user) => {
 
 const update = async (user, id) => {
 	const { name, username, email, phone, document_id, password_hash } = user;
-	if (
-		!name
-		|| !username
-		|| !email
-		|| !phone
-		|| !document_id
-		|| !password_hash
-	) {
-		return {
-			error: 400,
-			message: 'Bad Request',
-		};
-	}
 
 	const response = await getMyself(id);
-	if (response.error || !response.length) {
+	if (response.error || !response) {
 		return {
 			error: 400,
 			message: 'Bad Request',
@@ -131,6 +118,48 @@ const update = async (user, id) => {
 		} = await Pool.query(
 			'UPDATE users SET name = $2, username = $3, email = $4, phone = $5, password_hash = $6, document_id =$7, updated_at = NOW() WHERE id = $1 RETURNING *',
 			[id, name, username, email, phone, password_hash, document_id],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const updateProfile = async (user, id) => {
+	const {
+		description,
+		lives_in,
+		latitude,
+		longitude,
+		school,
+		work,
+		show_location,
+		birthday,
+	} = user;
+
+	const response = await getMyself(id);
+	if (response.error || !response) {
+		return {
+			error: 400,
+			message: 'Bad Request',
+		};
+	}
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'UPDATE users SET description = $2, lives_in = $3, latitude = $4, longitude = $5, school = $6, work =$7, show_location = $8, birthday = $9, updated_at = NOW() WHERE id = $1 RETURNING *',
+			[
+				id,
+				description,
+				lives_in,
+				latitude,
+				longitude,
+				school,
+				work,
+				show_location,
+				birthday,
+			],
 		);
 		return rows.shift();
 	} catch (err) {
@@ -168,13 +197,13 @@ const disable = async (id) => {
 	}
 };
 
-const upload = async (url) => {
+const upload = async (url, id) => {
 	try {
 		const {
 			rows,
 		} = await Pool.query(
-			'INSERT INTO users_pictures url = $1 RETURNING *',
-			[url],
+			'INSERT INTO users_pictures url = $1 WHERE id = $2 RETURNING *',
+			[url, id],
 		);
 		return rows;
 	} catch (err) {
@@ -187,7 +216,9 @@ module.exports = {
 	get,
 	store,
 	update,
+	updateProfile,
 	confirm,
 	disable,
 	upload,
+	verify,
 };
