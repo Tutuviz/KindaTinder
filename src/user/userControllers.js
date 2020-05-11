@@ -5,7 +5,7 @@ const getUserProfile = async (req, res) => {
 
 	const response = await User.getMyself(id);
 
-	if (response.error || !response.length) {
+	if (response.error || !response) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
@@ -28,7 +28,7 @@ const getProfile = async (req, res) => {
 
 	const response = await User.get(id);
 
-	if (response.error || !response.length) {
+	if (response.error || !response) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
@@ -113,7 +113,7 @@ const updateUserProfile = async (req, res) => {
 
 	const response = await User.update({ ...user, password_hash }, id);
 
-	if (response.error || !response.length) {
+	if (response.error || !response) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
@@ -130,7 +130,7 @@ const disableUser = async (req, res) => {
 
 	const response = await User.disable(id);
 
-	if (!response.length || response.error) {
+	if (!response || response.error) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
@@ -191,9 +191,9 @@ const updateMyProfile = async (req, res) => {
 		birthday: birthday || user.birthday,
 	};
 
-	const response = await User.update(data, id);
+	const response = await User.updateProfile(data, id);
 
-	if (response.error || !response.length) {
+	if (response.error || !response) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
