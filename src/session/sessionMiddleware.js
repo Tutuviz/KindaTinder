@@ -12,10 +12,9 @@ const verifyToken = (req, res, next) => {
 	const bearer = authorization.split(' ');
 	const token = bearer[1];
 
-	req.body.id = jwt.decode(token);
+	req.id = jwt.decode(token);
 
 	return next();
 };
-
 
 module.exports = { verifyToken };
