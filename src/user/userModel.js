@@ -135,6 +135,8 @@ const updateProfile = async (user, id) => {
 		work,
 		show_location,
 		birthday,
+		min_age,
+		max_age,
 	} = user;
 
 	const response = await getMyself(id);
@@ -148,7 +150,7 @@ const updateProfile = async (user, id) => {
 		const {
 			rows,
 		} = await Pool.query(
-			'UPDATE users SET description = $2, lives_in = $3, latitude = $4, longitude = $5, school = $6, work =$7, show_location = $8, birthday = $9, updated_at = NOW() WHERE id = $1 RETURNING *',
+			'UPDATE users SET description = $2, lives_in = $3, latitude = $4, longitude = $5, school = $6, work = $7, show_location = $8, birthday = $9, min_age = $10, max_age = $11, updated_at = NOW() WHERE id = $1 RETURNING *',
 			[
 				id,
 				description,
@@ -159,6 +161,8 @@ const updateProfile = async (user, id) => {
 				work,
 				show_location,
 				birthday,
+				min_age,
+				max_age,
 			],
 		);
 		return rows.shift();
@@ -202,8 +206,8 @@ const upload = async (url, id) => {
 		const {
 			rows,
 		} = await Pool.query(
-			'INSERT INTO users_pictures url = $1 WHERE id = $2 RETURNING *',
-			[url, id],
+			'INSERT INTO users_pictures (url, user_id) VALUES ($1, $2) RETURNING *',
+			[url.filename, id],
 		);
 		return rows;
 	} catch (err) {
