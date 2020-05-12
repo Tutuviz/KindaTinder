@@ -15,6 +15,7 @@ routes.post(
 	userMiddleware.encryptPassword,
 	userControllers.createUser,
 );
+
 routes.post(
 	'/users/upload',
 	sessionMiddleware.verifyToken,
@@ -27,6 +28,7 @@ routes.get(
 	sessionMiddleware.verifyToken,
 	userControllers.getUserProfile,
 );
+
 routes.get('/users/:id', userControllers.getProfile);
 
 routes.put(
@@ -35,6 +37,7 @@ routes.put(
 	userMiddleware.encryptPassword,
 	userControllers.updateUserProfile,
 );
+
 routes.put(
 	'/users/me/profile',
 	sessionMiddleware.verifyToken,
@@ -46,6 +49,7 @@ routes.put(
 	sessionMiddleware.verifyToken,
 	userControllers.confirmUser,
 ); // Manutencao
+
 routes.put(
 	'/users/me/disable',
 	sessionMiddleware.verifyToken,

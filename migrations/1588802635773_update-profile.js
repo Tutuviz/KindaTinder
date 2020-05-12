@@ -16,14 +16,18 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-	pgm.dropColumns('users', [
-		'description',
-		'lives_in',
-		'latitude',
-		'longitude',
-		'school',
-		'work',
-		'show_location',
-		'birthdate',
-	]);
+	pgm.dropColumns(
+		'users',
+		[
+			'description',
+			'lives_in',
+			'latitude',
+			'longitude',
+			'school',
+			'work',
+			'show_location',
+			'birthdate',
+		],
+		{ ifExists: true },
+	);
 };
