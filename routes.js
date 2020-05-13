@@ -29,6 +29,12 @@ routes.get(
 	userControllers.getUserProfile,
 );
 
+routes.get(
+	'/users/recommendation',
+	sessionMiddleware.verifyToken,
+	userControllers.getRecommendations,
+);
+
 routes.get('/users/:id', userControllers.getProfile);
 
 routes.put(

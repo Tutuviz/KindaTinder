@@ -24,7 +24,7 @@ const getUserProfile = async (req, res) => {
 };
 
 const getProfile = async (req, res) => {
-	const { id } = req;
+	const { id } = req.params;
 
 	const response = await User.get(id);
 
@@ -185,7 +185,7 @@ const updateMyProfile = async (req, res) => {
 		max_age = null,
 	} = req.body;
 
-	const user = User.get(id);
+	const user = await User.get(id);
 
 	const data = {
 		description: description || user.description,
@@ -212,7 +212,43 @@ const updateMyProfile = async (req, res) => {
 	return res.json(data);
 };
 
-const getRecommendations = async (req, res) => {};
+const getRecommendations = async (req, res) => {
+	const { id } = req;
+
+	const preferences = await User.get(id);
+	if (!preferences.min_age || !preferences.max_age) {
+		res.json({
+			error: 400,
+			message: 'Missing age preferences',
+		});
+	}
+
+	const response = await User.getRecommendations(id);
+	if (!response || response.error) {
+		return res.json({
+			error: response.error || 503,
+			message: response.message || 'Internal Error',
+		});
+	}
+
+	for (let loop = 0; loop < response.length; loop += 1) {
+		if (
+			response[loop].age < preferences.min_age ||
+			response[loop].age > preferences.max_age
+		) {
+			response.length -= 1;
+		}
+	}
+
+	if (!response) {
+		return res.json({
+			error: 404,
+			message: 'Not Found',
+		});
+	}
+
+	return res.json(response);
+};
 
 module.exports = {
 	getUserProfile,

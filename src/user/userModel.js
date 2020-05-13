@@ -209,6 +209,27 @@ const upload = async (url, id) => {
 			'INSERT INTO users_pictures (url, user_id) VALUES ($1, $2) RETURNING *',
 			[url.filename, id],
 		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const getRecommendations = async (id) => {
+	try {
+		const { rows } = await Pool.query(
+			`
+			SELECT
+				name, username, description, lives_in, school, work,
+				array_agg(url) photos,
+				date_part('year', AGE(NOW(), birthday)) age
+			FROM users
+			LEFT JOIN users_pictures ON users.id = users_pictures.user_id
+			WHERE users.id != $1
+			GROUP BY users.id
+			`,
+			[id],
+		);
 		return rows;
 	} catch (err) {
 		return DEFAULT_ERR;
@@ -225,4 +246,5 @@ module.exports = {
 	disable,
 	upload,
 	verify,
+	getRecommendations,
 };
