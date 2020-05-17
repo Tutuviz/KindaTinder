@@ -1,4 +1,5 @@
 const User = require('./userModel');
+const sendMail = require('../utils/mail');
 
 const getUserProfile = async (req, res) => {
 	const { id } = req;
@@ -84,6 +85,12 @@ const createUser = async (req, res) => {
 			message: response.message || 'Internal Error',
 		});
 	}
+
+	await sendMail({
+		to: `${response.email}`,
+		subject: `${response.name}`,
+		text: 'Vc se cadastrou, parabens',
+	});
 
 	return res.json({ id: response.id, ...user });
 };

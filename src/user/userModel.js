@@ -74,6 +74,9 @@ const store = async (user) => {
 	const userExists = await verify(email);
 
 	if (userExists) {
+		if (userExists.error) {
+			return userExists;
+		}
 		return {
 			error: 409,
 			message: 'User already exists',
