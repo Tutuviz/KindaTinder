@@ -62,6 +62,18 @@ routes.put(
 	userControllers.disableUser,
 );
 
+routes.put(
+	'/match/like',
+	sessionMiddleware.verifyToken,
+	userControllers.likeOne,
+);
+
+routes.put(
+	'/match/dislike',
+	sessionMiddleware.verifyToken,
+	userControllers.dislikeOne,
+);
+
 routes.post('/auth', sessionController.auth);
 
 module.exports = routes;

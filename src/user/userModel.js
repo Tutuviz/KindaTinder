@@ -223,7 +223,7 @@ const getRecommendations = async (id) => {
 		const { rows } = await Pool.query(
 			`
 			SELECT
-				name, username, description, lives_in, school, work,
+				users.id, name, username, description, lives_in, school, work,
 				array_agg(url) photos,
 				date_part('year', AGE(NOW(), birthday)) age
 			FROM users
@@ -239,6 +239,57 @@ const getRecommendations = async (id) => {
 	}
 };
 
+const verifyMatch = async (user_id, match_id) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'SELECT * FROM matches WHERE user_id = $1 AND match_id = $2 OR match_id = $1 AND user_id = $2',
+			[user_id, match_id],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const createMatch = async (
+	user_id,
+	match_id,
+	user_liked = false,
+	match_liked = false,
+) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'INSERT INTO matches (user_id, match_id, user_liked, match_liked) VALUES ($1, $2, $3, $4) RETURNING *',
+			[user_id, match_id, user_liked, match_liked],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const updateMatch = async (
+	user_id,
+	match_id,
+	user_liked = false,
+	match_liked = false,
+) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'UPDATE matches SET user_liked = $1, match_liked = $2 WHERE user_id = $3 AND match_id = $4 RETURNING *',
+			[user_liked, match_liked, user_id, match_id],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
 module.exports = {
 	getMyself,
 	get,
@@ -250,4 +301,10 @@ module.exports = {
 	upload,
 	verify,
 	getRecommendations,
+	createMatch,
+	updateMatch,
+	verifyMatch,
+	// dislike,
+	// matches,
+	// unmatch,
 };

@@ -230,6 +230,8 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
+	// const algo = await User.verifyMatch(id);
+
 	const response = await User.getRecommendations(id);
 	if (!response || response.error) {
 		return res.json({
@@ -257,6 +259,115 @@ const getRecommendations = async (req, res) => {
 	return res.json(response);
 };
 
+const likeOne = async (req, res) => {
+	const user_id = req.id;
+	const { match_id } = req.body;
+
+	const liked = await User.verifyMatch(user_id, match_id);
+
+	if (!liked) {
+		const r = await User.createMatch(user_id, match_id, true, null);
+		res.json({
+			error: r.error,
+			message: r.message || 'Liked!',
+		});
+	} else if (liked.user_liked && liked.match_liked) {
+		res.json({
+			error: 409,
+			message: 'Already a match',
+		});
+	} else if (liked.match_id === user_id && liked.user_id === match_id) {
+		const r = await User.updateMatch(
+			match_id,
+			user_id,
+			liked.user_liked,
+			true,
+		);
+		res.json({
+			error: r.error,
+			message: r.message || 'Liked!',
+		});
+	} else if (liked.error) {
+		res.json({
+			error: liked.error || 503,
+			message: liked.message || 'Internal Error',
+		});
+	} else {
+		res.json({
+			error: 409,
+			message: 'Already Liked',
+		});
+	}
+};
+
+const dislikeOne = async (req, res) => {
+	const user_id = req.id;
+	const { match_id } = req.body;
+
+	const liked = await User.verifyMatch(user_id, match_id);
+
+	if (!liked) {
+		const r = await User.createMatch(user_id, match_id, false, null);
+		res.json({
+			error: r.error,
+			message: r.message || 'disliked!',
+		});
+	} else if (liked.user_id === user_id && liked.user_liked) {
+		res.json({
+			error: 409,
+			message: 'Already liked',
+		});
+	} else if (liked.match_id === user_id && liked.match_liked) {
+		res.json({
+			error: 409,
+			message: 'Already liked',
+		});
+	} else if (liked.match_id === user_id && liked.user_id === match_id) {
+		const r = await User.updateMatch(
+			match_id,
+			user_id,
+			liked.user_liked,
+			false,
+		);
+		res.json({
+			error: r.error,
+			message: r.message || 'disliked!',
+		});
+	} else if (liked.error) {
+		res.json({
+			error: liked.error || 503,
+			message: liked.message || 'Internal Error',
+		});
+	} else {
+		res.json({
+			error: 409,
+			message: 'Already disliked',
+		});
+	}
+};
+
+const getMatches = async (req, res) => {
+	const { id } = req;
+	const response = await User.like(id);
+	if (!response || response.error) {
+		return res.json({
+			error: response.error || 503,
+			message: response.message || 'Internal Error',
+		});
+	}
+};
+
+const UndoMatches = async (req, res) => {
+	const { id } = req;
+	const response = await User.like(id);
+	if (!response || response.error) {
+		return res.json({
+			error: response.error || 503,
+			message: response.message || 'Internal Error',
+		});
+	}
+};
+
 module.exports = {
 	getUserProfile,
 	getProfile,
@@ -267,4 +378,8 @@ module.exports = {
 	disableUser,
 	uploadPicture,
 	getRecommendations,
+	likeOne,
+	dislikeOne,
+	getMatches,
+	UndoMatches,
 };
