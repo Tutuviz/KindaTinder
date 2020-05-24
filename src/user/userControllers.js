@@ -266,84 +266,127 @@ const likeOne = async (req, res) => {
 	const liked = await User.verifyMatch(user_id, match_id);
 
 	if (!liked) {
-		const r = await User.createMatch(user_id, match_id, true, null);
-		res.json({
-			error: r.error,
-			message: r.message || 'Liked!',
+		const match = await User.createMatch(user_id, match_id, true, null);
+		return res.json({
+			error: match.error,
+			message: match.message || 'Liked!',
 		});
-	} else if (liked.user_liked && liked.match_liked) {
-		res.json({
+	}
+	if (liked.user_liked && liked.match_liked) {
+		return res.json({
 			error: 409,
 			message: 'Already a match',
 		});
-	} else if (liked.match_id === user_id && liked.user_id === match_id) {
-		const r = await User.updateMatch(
-			match_id,
-			user_id,
-			liked.user_liked,
-			true,
-		);
-		res.json({
-			error: r.error,
-			message: r.message || 'Liked!',
-		});
-	} else if (liked.error) {
-		res.json({
-			error: liked.error || 503,
-			message: liked.message || 'Internal Error',
-		});
-	} else {
-		res.json({
-			error: 409,
-			message: 'Already Liked',
-		});
 	}
+	if (liked.user_id === user_id) {
+		if (liked.user_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already Liked',
+			});
+		}
+		if (!liked.user_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already disliked',
+			});
+		}
+	}
+	if (liked.match_id === user_id) {
+		if (liked.match_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already liked',
+			});
+		}
+		if (liked.match_liked === null) {
+			const match = await User.updateMatch(
+				match_id,
+				user_id,
+				liked.user_liked,
+				true,
+			);
+			return res.json({
+				error: match.error,
+				message: match.message || 'Liked!',
+			});
+		}
+		if (!liked.match_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already disliked',
+			});
+		}
+	}
+	return res.json({
+		error: liked.error || 503,
+		message: liked.message || 'Internal Error',
+	});
 };
 
 const dislikeOne = async (req, res) => {
 	const user_id = req.id;
 	const { match_id } = req.body;
 
-	const liked = await User.verifyMatch(user_id, match_id);
+	const disliked = await User.verifyMatch(user_id, match_id);
 
-	if (!liked) {
-		const r = await User.createMatch(user_id, match_id, false, null);
-		res.json({
-			error: r.error,
-			message: r.message || 'disliked!',
-		});
-	} else if (liked.user_id === user_id && liked.user_liked) {
-		res.json({
-			error: 409,
-			message: 'Already liked',
-		});
-	} else if (liked.match_id === user_id && liked.match_liked) {
-		res.json({
-			error: 409,
-			message: 'Already liked',
-		});
-	} else if (liked.match_id === user_id && liked.user_id === match_id) {
-		const r = await User.updateMatch(
-			match_id,
-			user_id,
-			liked.user_liked,
-			false,
-		);
-		res.json({
-			error: r.error,
-			message: r.message || 'disliked!',
-		});
-	} else if (liked.error) {
-		res.json({
-			error: liked.error || 503,
-			message: liked.message || 'Internal Error',
-		});
-	} else {
-		res.json({
-			error: 409,
-			message: 'Already disliked',
+	if (!disliked) {
+		const match = await User.createMatch(user_id, match_id, false, null);
+		return res.json({
+			error: match.error,
+			message: match.message || 'disliked!',
 		});
 	}
+	if (disliked.user_liked && disliked.match_liked) {
+		return res.json({
+			error: 409,
+			message: 'Already a match',
+		});
+	}
+	if (disliked.user_id === user_id) {
+		if (disliked.user_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already liked',
+			});
+		}
+		if (!disliked.user_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already disliked',
+			});
+		}
+	}
+	if (disliked.match_id === user_id) {
+		if (disliked.match_liked) {
+			return res.json({
+				error: 409,
+				message: 'Already Liked',
+			});
+		}
+		if (disliked.match_liked === null) {
+			const r = await User.updateMatch(
+				match_id,
+				user_id,
+				disliked.user_liked,
+				false,
+			);
+			return res.json({
+				error: r.error,
+				message: r.message || 'disliked!',
+			});
+		}
+		if (!disliked.match_liked) {
+			res.json({
+				error: 409,
+				message: 'Already liked',
+			});
+		}
+	}
+	return res.json({
+		error: disliked.error || 503,
+		message: disliked.message || 'Internal Error',
+	});
 };
 
 const getMatches = async (req, res) => {
