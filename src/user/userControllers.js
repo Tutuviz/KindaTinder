@@ -391,13 +391,20 @@ const dislikeOne = async (req, res) => {
 
 const getMatches = async (req, res) => {
 	const { id } = req;
-	const response = await User.like(id);
+	const response = await User.matches(id);
 	if (!response || response.error) {
 		return res.json({
 			error: response.error || 503,
 			message: response.message || 'Internal Error',
 		});
 	}
+	if (!response.length) {
+		return res.json({
+			error: 404,
+			message: 'No matches found',
+		});
+	}
+	return res.json(response);
 };
 
 const UndoMatches = async (req, res) => {

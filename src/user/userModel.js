@@ -290,6 +290,21 @@ const updateMatch = async (
 		return DEFAULT_ERR;
 	}
 };
+
+const matches = async (id) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'SELECT id, user_id, match_id FROM matches WHERE user_id = $1 AND user_liked = true AND match_liked = true',
+			[id],
+		);
+		return rows;
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
 module.exports = {
 	getMyself,
 	get,
@@ -304,7 +319,6 @@ module.exports = {
 	createMatch,
 	updateMatch,
 	verifyMatch,
-	// dislike,
-	// matches,
+	matches,
 	// unmatch,
 };

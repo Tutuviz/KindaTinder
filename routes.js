@@ -62,6 +62,12 @@ routes.put(
 	userControllers.disableUser,
 );
 
+routes.get(
+	'/match/all',
+	sessionMiddleware.verifyToken,
+	userControllers.getMatches,
+);
+
 routes.put(
 	'/match/like',
 	sessionMiddleware.verifyToken,
