@@ -218,6 +218,20 @@ const upload = async (url, id) => {
 	}
 };
 
+const verifyMatch = async (user_id, match_id) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'SELECT * FROM matches WHERE user_id = $1 AND match_id = $2 OR match_id = $1 AND user_id = $2',
+			[user_id, match_id],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
 const getRecommendations = async (id) => {
 	try {
 		const { rows } = await Pool.query(
@@ -234,20 +248,6 @@ const getRecommendations = async (id) => {
 			[id],
 		);
 		return rows;
-	} catch (err) {
-		return DEFAULT_ERR;
-	}
-};
-
-const verifyMatch = async (user_id, match_id) => {
-	try {
-		const {
-			rows,
-		} = await Pool.query(
-			'SELECT * FROM matches WHERE user_id = $1 AND match_id = $2 OR match_id = $1 AND user_id = $2',
-			[user_id, match_id],
-		);
-		return rows.shift();
 	} catch (err) {
 		return DEFAULT_ERR;
 	}
@@ -296,10 +296,24 @@ const matches = async (id) => {
 		const {
 			rows,
 		} = await Pool.query(
-			'SELECT id, user_id, match_id FROM matches WHERE user_id = $1 AND user_liked = true AND match_liked = true',
+			'SELECT id, user_id, match_id FROM matches WHERE user_id = $1 AND user_liked = true AND match_liked = true AND unmatched = false',
 			[id],
 		);
 		return rows;
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const unmatch = async (user_id, match_id) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'UPDATE matches SET unmatched = true WHERE user_id = $1 AND match_id = $2 OR user_id = $2 AND match_id = $1 RETURNING *',
+			[user_id, match_id],
+		);
+		return rows.shift();
 	} catch (err) {
 		return DEFAULT_ERR;
 	}
@@ -320,5 +334,5 @@ module.exports = {
 	updateMatch,
 	verifyMatch,
 	matches,
-	// unmatch,
+	unmatch,
 };

@@ -230,9 +230,8 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
-	// const algo = await User.verifyMatch(id);
-
 	const response = await User.getRecommendations(id);
+
 	if (!response || response.error) {
 		return res.json({
 			error: response.error || 503,
@@ -241,11 +240,26 @@ const getRecommendations = async (req, res) => {
 	}
 
 	for (let loop = 0; loop < response.length; loop += 1) {
-		if (
-			response[loop].age < preferences.min_age ||
-			response[loop].age > preferences.max_age
-		) {
+		// eslint-disable-next-line no-await-in-loop
+		const they = await User.verifyMatch(id, response[loop].id);
+
+		if (!they) {
+			if (
+				response[loop].age < preferences.min_age ||
+				response[loop].age > preferences.max_age
+			) {
+				for (let index = loop; index < response.length; index += 1) {
+					response[index] = response[index + 1];
+				}
+				response.length -= 1;
+				loop -= 1;
+			}
+		} else if (they.unmatched) {
+			for (let index = loop; index < response.length; index += 1) {
+				response[index] = response[index + 1];
+			}
 			response.length -= 1;
+			loop -= 1;
 		}
 	}
 
@@ -407,15 +421,33 @@ const getMatches = async (req, res) => {
 	return res.json(response);
 };
 
-const UndoMatches = async (req, res) => {
+const undoMatches = async (req, res) => {
 	const { id } = req;
-	const response = await User.like(id);
-	if (!response || response.error) {
+	const { match_id } = req.body;
+	const response = await User.verifyMatch(id, match_id);
+
+	if (!response) {
 		return res.json({
-			error: response.error || 503,
-			message: response.message || 'Internal Error',
+			error: 400,
+			message: 'Bad Request',
 		});
 	}
+	if (response.unmatched) {
+		return res.json({
+			error: 409,
+			message: 'Already unmatched',
+		});
+	}
+
+	if (response.user_liked && response.match_liked) {
+		const Unmatch = await User.unmatch(id, match_id);
+		return res.json(Unmatch);
+	}
+
+	return res.json({
+		error: response.error || 401,
+		message: response.message || 'That`s not a match',
+	});
 };
 
 module.exports = {
@@ -431,5 +463,5 @@ module.exports = {
 	likeOne,
 	dislikeOne,
 	getMatches,
-	UndoMatches,
+	undoMatches,
 };

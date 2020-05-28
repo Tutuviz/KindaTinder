@@ -69,6 +69,12 @@ routes.get(
 );
 
 routes.put(
+	'/match/unmatch',
+	sessionMiddleware.verifyToken,
+	userControllers.undoMatches,
+);
+
+routes.put(
 	'/match/like',
 	sessionMiddleware.verifyToken,
 	userControllers.likeOne,
