@@ -13,15 +13,18 @@ const getUserProfile = async (req, res) => {
 		});
 	}
 
-	const { name, username, email, phone } = response;
+	const {
+		document_id,
+		google_id,
+		facebook_id,
+		password_hash,
+		deleted_at,
+		updated_at,
+		show_location,
+		...user
+	} = response;
 
-	return res.json({
-		name,
-		username,
-		email,
-		phone,
-		id,
-	});
+	return res.json({ ...user });
 };
 
 const getProfile = async (req, res) => {
@@ -36,14 +39,16 @@ const getProfile = async (req, res) => {
 		});
 	}
 
-	const { name, username, email, phone } = response;
+	const { name, username, description, school, work, birthday } = response;
 
 	return res.json({
+		id,
 		name,
 		username,
-		email,
-		phone,
-		id,
+		description,
+		birthday,
+		school,
+		work,
 	});
 };
 
@@ -230,7 +235,12 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
-	const response = await User.getRecommendations(id);
+	// Todas as pessoas
+	const response = await User.getRecommendations(
+		id,
+		preferences.min_age,
+		preferences.max_age,
+	);
 
 	if (!response || response.error) {
 		return res.json({
@@ -243,23 +253,16 @@ const getRecommendations = async (req, res) => {
 		// eslint-disable-next-line no-await-in-loop
 		const they = await User.verifyMatch(id, response[loop].id);
 
-		if (!they) {
-			if (
-				response[loop].age < preferences.min_age ||
-				response[loop].age > preferences.max_age
-			) {
-				for (let index = loop; index < response.length; index += 1) {
-					response[index] = response[index + 1];
+		if (they) {
+			if (they.match_id === id && they.match_liked === undefined) {
+				// Do nothing
+			} else {
+				for (let i = loop; i < response.length; i += 1) {
+					response[i] = response[i + 1];
 				}
 				response.length -= 1;
 				loop -= 1;
 			}
-		} else if (they.unmatched) {
-			for (let index = loop; index < response.length; index += 1) {
-				response[index] = response[index + 1];
-			}
-			response.length -= 1;
-			loop -= 1;
 		}
 	}
 
@@ -450,6 +453,12 @@ const undoMatches = async (req, res) => {
 	});
 };
 
+const excluir = async (req, res) => {
+	const { id } = req;
+	const algo = await User.getUserPictures(id);
+	res.json(algo);
+};
+
 module.exports = {
 	getUserProfile,
 	getProfile,
@@ -464,4 +473,5 @@ module.exports = {
 	dislikeOne,
 	getMatches,
 	undoMatches,
+	excluir,
 };
