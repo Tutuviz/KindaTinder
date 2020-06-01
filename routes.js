@@ -88,4 +88,6 @@ routes.put(
 
 routes.post('/auth', sessionController.auth);
 
+routes.get('/teste', sessionMiddleware.verifyToken, userControllers.excluir);
+
 module.exports = routes;
