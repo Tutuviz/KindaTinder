@@ -5,11 +5,10 @@ const checkFile = (req, file, next) => {
 	const ext = path.extname(file.originalname);
 	if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
 		// Tratar isso
-		// return res.json({
-		//   error: 409,
-		//   message: 'Bad Request',
-		// });
-		//
+		return next({
+			error: 409,
+			message: 'Bad Request',
+		});
 	}
 	return next(null, true);
 };
