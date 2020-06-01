@@ -232,22 +232,45 @@ const verifyMatch = async (user_id, match_id) => {
 	}
 };
 
-const getRecommendations = async (id) => {
+const getUserPictures = async (id) => {
+	try {
+		const {
+			rows,
+		} = await Pool.query(
+			'SELECT array_agg(url) photos FROM users_pictures WHERE user_id = $1',
+			[id],
+		);
+		return rows.shift().photos;
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const getRecommendations = async (id, min_age, max_age) => {
 	try {
 		const { rows } = await Pool.query(
 			`
-			SELECT
-				users.id, name, username, description, lives_in, school, work,
-				array_agg(url) photos,
-				date_part('year', AGE(NOW(), birthday)) age
-			FROM users
-			LEFT JOIN users_pictures ON users.id = users_pictures.user_id
-			WHERE users.id != $1
-			GROUP BY users.id
-			`,
-			[id],
+				SELECT * FROM (
+					SELECT id, name, username, description, school, work, lives_in, date_part('year', AGE(NOW(), birthday)) age FROM users
+				) as users
+				WHERE
+					id != $1 AND
+					age >= $2 AND
+					age <= $3
+				`,
+			[id, min_age, max_age],
 		);
-		return rows;
+		const users = [];
+		// eslint-disable-next-line no-restricted-syntax
+		for (const user of rows) {
+			// eslint-disable-next-line no-await-in-loop
+			const photos = await getUserPictures(user.id);
+			users.push({
+				...user,
+				photos,
+			});
+		}
+		return users;
 	} catch (err) {
 		return DEFAULT_ERR;
 	}
@@ -335,4 +358,5 @@ module.exports = {
 	verifyMatch,
 	matches,
 	unmatch,
+	getUserPictures,
 };
