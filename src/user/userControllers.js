@@ -3,6 +3,7 @@ const sendMail = require('../utils/mail');
 
 const getUserProfile = async (req, res) => {
 	const { id } = req;
+	const { premium } = req;
 
 	const response = await User.getMyself(id);
 
@@ -24,7 +25,7 @@ const getUserProfile = async (req, res) => {
 		...user
 	} = response;
 
-	return res.json({ ...user });
+	return res.json({ ...user, premium });
 };
 
 const getProfile = async (req, res) => {
@@ -249,31 +250,27 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
-	for (let loop = 0; loop < response.length; loop += 1) {
-		// eslint-disable-next-line no-await-in-loop
-		const they = await User.verifyMatch(id, response[loop].id);
-
-		if (they) {
-			if (they.match_id === id && they.match_liked === undefined) {
-				// Do nothing
-			} else {
-				for (let i = loop; i < response.length; i += 1) {
-					response[i] = response[i + 1];
-				}
-				response.length -= 1;
-				loop -= 1;
-			}
+	const trueRecommendations = [];
+	/* eslint-disable no-await-in-loop */
+	/* eslint-disable no-restricted-syntax */
+	for (const iterator of response) {
+		const they = await User.verifyMatch(id, iterator.id);
+		if (
+			!they ||
+			(they && they.match_id === id && they.match_liked === undefined)
+		) {
+			trueRecommendations.push(iterator);
 		}
 	}
 
-	if (!response) {
+	if (!trueRecommendations) {
 		return res.json({
 			error: 404,
 			message: 'Not Found',
 		});
 	}
 
-	return res.json(response);
+	return res.json(trueRecommendations);
 };
 
 const likeOne = async (req, res) => {

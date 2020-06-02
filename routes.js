@@ -3,6 +3,8 @@ const { Router } = require('express');
 const userMiddleware = require('./src/user/userMiddleware');
 const userControllers = require('./src/user/userControllers');
 
+const premiumControllers = require('./src/premium/premiumControllers');
+
 const sessionMiddleware = require('./src/session/sessionMiddleware');
 const sessionController = require('./src/session/sessionControllers');
 
@@ -20,22 +22,29 @@ routes.post(
 	'/users/upload',
 	sessionMiddleware.verifyToken,
 	uploadMiddleware.uploadFile,
+	userMiddleware.verifyPremium,
 	userControllers.uploadPicture,
 );
 
 routes.get(
 	'/users/me',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.getUserProfile,
 );
 
 routes.get(
 	'/users/recommendation',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.getRecommendations,
 );
 
-routes.get('/users/:id', userControllers.getProfile);
+routes.get(
+	'/users/:id',
+	userMiddleware.verifyPremium,
+	userControllers.getProfile,
+);
 
 routes.put(
 	'/users/me',
@@ -65,6 +74,7 @@ routes.put(
 routes.get(
 	'/match/all',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.getMatches,
 );
 
@@ -77,13 +87,22 @@ routes.put(
 routes.put(
 	'/match/like',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.likeOne,
 );
 
 routes.put(
 	'/match/dislike',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.dislikeOne,
+);
+
+routes.post(
+	'/premium/pay',
+	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
+	premiumControllers.payment,
 );
 
 routes.post('/auth', sessionController.auth);
