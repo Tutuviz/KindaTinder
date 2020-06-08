@@ -29,7 +29,7 @@ const verifyPremium = async (req, res, next) => {
 			days += rows.mons * 30;
 		}
 
-		if (days <= 30) {
+		if (days !== null && days <= 30) {
 			req.premium = true;
 		} else {
 			req.premium = false;

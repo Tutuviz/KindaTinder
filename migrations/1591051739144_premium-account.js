@@ -4,10 +4,14 @@ exports.shorthands = undefined;
 
 exports.up = (pgm) => {
 	pgm.addColumns('users', {
+		hide_age: { type: 'BOOL', default: false },
+		hide_distance: { type: 'BOOL', default: false },
 		premium: { type: 'DATE' },
 	});
 };
 
 exports.down = (pgm) => {
-	pgm.dropTables('users', ['premium'], { ifExists: true });
+	pgm.dropColumns('users', ['hide_age', 'hide_distance', 'premium'], {
+		ifExists: true,
+	});
 };

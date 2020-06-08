@@ -40,14 +40,14 @@ const getProfile = async (req, res) => {
 		});
 	}
 
-	const { name, username, description, school, work, birthday } = response;
+	const { name, username, description, school, work, age } = response;
 
 	return res.json({
 		id,
 		name,
 		username,
 		description,
-		birthday,
+		age,
 		school,
 		work,
 	});
@@ -185,6 +185,7 @@ const uploadPicture = async (req, res) => {
 
 const updateMyProfile = async (req, res) => {
 	const { id } = req;
+	const { premium } = req;
 	const {
 		description = null,
 		lives_in = null,
@@ -196,7 +197,16 @@ const updateMyProfile = async (req, res) => {
 		birthday = null,
 		min_age = null,
 		max_age = null,
+		hide_age = null,
+		hide_distance = null,
 	} = req.body;
+
+	if (!premium && (hide_age || hide_distance)) {
+		return res.json({
+			error: 402,
+			message: 'Sorry, that`s a premium content',
+		});
+	}
 
 	const user = await User.get(id);
 
@@ -211,6 +221,8 @@ const updateMyProfile = async (req, res) => {
 		birthday: birthday || user.birthday,
 		min_age: min_age || user.min_age,
 		max_age: max_age || user.max_age,
+		hide_age: hide_age || user.hide_age,
+		hide_distance: hide_distance || user.hide_distance,
 	};
 
 	const response = await User.updateProfile(data, id);
@@ -227,6 +239,7 @@ const updateMyProfile = async (req, res) => {
 
 const getRecommendations = async (req, res) => {
 	const { id } = req;
+	const { premium } = req;
 
 	const preferences = await User.get(id);
 	if (!preferences.min_age || !preferences.max_age) {
@@ -236,7 +249,6 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
-	// Todas as pessoas
 	const response = await User.getRecommendations(
 		id,
 		preferences.min_age,
@@ -250,27 +262,54 @@ const getRecommendations = async (req, res) => {
 		});
 	}
 
-	const trueRecommendations = [];
-	/* eslint-disable no-await-in-loop */
 	/* eslint-disable no-restricted-syntax */
-	for (const iterator of response) {
-		const they = await User.verifyMatch(id, iterator.id);
-		if (
-			!they ||
-			(they && they.match_id === id && they.match_liked === undefined)
-		) {
-			trueRecommendations.push(iterator);
+	/* eslint-disable no-await-in-loop */
+	const addResponse = [];
+	for (const user of response) {
+		const some = await User.get(user.id);
+		if (some.premium) {
+			if (some.hide_age && some.hide_distance) {
+				addResponse.push(user);
+			} else if (some.hide_age) {
+				addResponse.push({ ...user, distance: 'working on it' });
+			} else if (some.hide_distance) {
+				addResponse.push({ ...user, age: some.age });
+			}
+		} else {
+			addResponse.push({
+				...user,
+				age: some.age,
+				distance: 'working on it',
+			});
 		}
 	}
 
-	if (!trueRecommendations) {
+	const normalRecommendations = [];
+	const premiumRecommendations = [];
+	for (const matches of addResponse) {
+		const they = await User.verifyMatch(id, matches.id);
+		if (!they || (they.match_id === id && they.match_liked === null)) {
+			normalRecommendations.push(matches);
+			if (they && they.user_liked) {
+				premiumRecommendations.push({ ...matches, liked: true });
+			} else {
+				premiumRecommendations.push({ ...matches, liked: false });
+			}
+		}
+	}
+
+	if (!normalRecommendations) {
 		return res.json({
 			error: 404,
 			message: 'Not Found',
 		});
 	}
 
-	return res.json(trueRecommendations);
+	if (premium) {
+		return res.json(premiumRecommendations);
+	}
+
+	return res.json(normalRecommendations);
 };
 
 const likeOne = async (req, res) => {
@@ -320,6 +359,12 @@ const likeOne = async (req, res) => {
 				liked.user_liked,
 				true,
 			);
+			if (liked.user_liked) {
+				return res.json({
+					error: match.error,
+					message: match.message || 'Congrats! It`s a match',
+				});
+			}
 			return res.json({
 				error: match.error,
 				message: match.message || 'Liked!',

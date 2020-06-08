@@ -40,11 +40,7 @@ routes.get(
 	userControllers.getRecommendations,
 );
 
-routes.get(
-	'/users/:id',
-	userMiddleware.verifyPremium,
-	userControllers.getProfile,
-);
+routes.get('/users/:id', userControllers.getProfile);
 
 routes.put(
 	'/users/me',
@@ -56,6 +52,7 @@ routes.put(
 routes.put(
 	'/users/me/profile',
 	sessionMiddleware.verifyToken,
+	userMiddleware.verifyPremium,
 	userControllers.updateMyProfile,
 );
 

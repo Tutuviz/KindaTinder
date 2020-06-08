@@ -21,9 +21,15 @@ const verify = async (email) => {
 
 const getMyself = async (id) => {
 	try {
-		const { rows } = await Pool.query('SELECT * FROM users WHERE id = $1', [
-			id,
-		]);
+		const { rows } = await Pool.query(
+			`
+			SELECT * FROM (
+				SELECT *, date_part('year', AGE(NOW(), birthday)) as age FROM users
+				) as users
+			WHERE id = $1
+			`,
+			[id],
+		);
 
 		const user = rows[0];
 		if (user.deleted_at) {
@@ -41,9 +47,15 @@ const getMyself = async (id) => {
 
 const get = async (id) => {
 	try {
-		const { rows } = await Pool.query('SELECT * FROM users WHERE id = $1', [
-			id,
-		]);
+		const { rows } = await Pool.query(
+			`
+			SELECT * FROM (
+				SELECT *, date_part('year', AGE(NOW(), birthday)) as age FROM users
+				) as users
+			WHERE id = $1
+			`,
+			[id],
+		);
 
 		const user = rows[0];
 		if (user.deleted_at) {
@@ -140,6 +152,8 @@ const updateProfile = async (user, id) => {
 		birthday,
 		min_age,
 		max_age,
+		hide_age,
+		hide_distance,
 	} = user;
 
 	const response = await getMyself(id);
@@ -153,7 +167,7 @@ const updateProfile = async (user, id) => {
 		const {
 			rows,
 		} = await Pool.query(
-			'UPDATE users SET description = $2, lives_in = $3, latitude = $4, longitude = $5, school = $6, work = $7, show_location = $8, birthday = $9, min_age = $10, max_age = $11, updated_at = NOW() WHERE id = $1 RETURNING *',
+			'UPDATE users SET description = $2, lives_in = $3, latitude = $4, longitude = $5, school = $6, work = $7, show_location = $8, birthday = $9, min_age = $10, max_age = $11, hide_age = $12, hide_distance = $13, updated_at = NOW() WHERE id = $1 RETURNING *',
 			[
 				id,
 				description,
@@ -166,6 +180,8 @@ const updateProfile = async (user, id) => {
 				birthday,
 				min_age,
 				max_age,
+				hide_age,
+				hide_distance,
 			],
 		);
 		return rows.shift();
@@ -250,7 +266,7 @@ const getRecommendations = async (id, min_age, max_age) => {
 	try {
 		const { rows } = await Pool.query(
 			`
-				SELECT * FROM (
+				SELECT id, name, username, description, school, work, lives_in FROM (
 					SELECT id, name, username, description, school, work, lives_in, date_part('year', AGE(NOW(), birthday)) age FROM users
 				) as users
 				WHERE
