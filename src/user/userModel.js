@@ -10,7 +10,7 @@ const verify = async (email) => {
 		const {
 			rows,
 		} = await Pool.query(
-			'SELECT id, password_hash FROM users WHERE email = $1',
+			'SELECT name, id, password_hash FROM users WHERE email = $1',
 			[email],
 		);
 		return rows.shift();
@@ -242,6 +242,14 @@ const verifyMatch = async (user_id, match_id) => {
 			'SELECT * FROM matches WHERE user_id = $1 AND match_id = $2 OR match_id = $1 AND user_id = $2',
 			[user_id, match_id],
 		);
+
+		if (!rows.length) {
+			return {
+				error: 404,
+				message: 'Not Found',
+			};
+		}
+
 		return rows.shift();
 	} catch (err) {
 		return DEFAULT_ERR;
@@ -358,6 +366,60 @@ const unmatch = async (user_id, match_id) => {
 	}
 };
 
+const sendMessage = async (sender, match_id, msg) => {
+	try {
+		const { rows } = await Pool.query(
+			`
+			INSERT INTO messages (sender_id, match_id, msg) VALUES ($1, $2, $3) RETURNING *
+			`,
+			[sender, match_id, msg],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const viewMessage = async (match_id, sender_id) => {
+	try {
+		const { rows } = await Pool.query(
+			`
+			SELECT msg, sender_id FROM messages WHERE match_id = $1 ORDER BY datetime DESC LIMIT 20
+			`,
+			[match_id],
+		);
+		const { algo } = await Pool.query(
+			`
+			SELECT msg, sender_id FROM messages WHERE match_id = $1 AND sender_id = $2 AND delivered = false ORDER BY datetime DESC LIMIT 20
+			`,
+			[match_id],
+		);
+		await Pool.query(
+			`
+			UPDATE messages SET delivered = true WHERE match_id = $1 AND sender_id = $2 AND delivered = false
+			`,
+			[match_id, sender_id],
+		);
+		return rows;
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
+const getMatchById = async (id) => {
+	try {
+		const {
+			rows,
+		} = Pool.query(
+			'SELECT * FROM matches WHERE id = $1 AND user_liked = true AND match_liked = true AND unmatched = false',
+			[id],
+		);
+		return rows.shift();
+	} catch (err) {
+		return DEFAULT_ERR;
+	}
+};
+
 module.exports = {
 	getMyself,
 	get,
@@ -375,4 +437,7 @@ module.exports = {
 	matches,
 	unmatch,
 	getUserPictures,
+	viewMessage,
+	sendMessage,
+	getMatchById,
 };

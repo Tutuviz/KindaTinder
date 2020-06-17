@@ -501,6 +501,44 @@ const excluir = async (req, res) => {
 	res.json(algo);
 };
 
+const sendMessages = async (req, res) => {
+	const { id } = req;
+	const { match_id } = req.params;
+	const { message } = req.body;
+	const match = await User.verifyMatch(id, match_id);
+
+	if (!match || match.error) {
+		return res.json({
+			error: match.error || 401,
+			message: match.message || 'That`s not a match',
+		});
+	}
+
+	const response = await User.sendMessage(id, match.id, message);
+
+	return res.json(response);
+};
+
+const getMessages = async (req, res) => {
+	const { id } = req;
+	const { match_id } = req.params;
+
+	const match = await User.verifyMatch(id, match_id);
+
+	if (!match || match.unmatched || match.error) {
+		return res.json({
+			error: match.error || 401,
+			message: match.message || 'That`s not a match',
+		});
+	}
+
+	const response = await User.viewMessage(match.id);
+
+	const batata = response.reverse(); // parou de funcionar n sei pq
+
+	return res.json(response);
+};
+
 module.exports = {
 	getUserProfile,
 	getProfile,
@@ -516,4 +554,6 @@ module.exports = {
 	getMatches,
 	undoMatches,
 	excluir,
+	getMessages,
+	sendMessages,
 };
