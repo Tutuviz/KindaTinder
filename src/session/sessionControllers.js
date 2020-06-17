@@ -22,9 +22,14 @@ const auth = async (req, res) => {
 	);
 
 	if (passwordMatch) {
-		jwt.sign(response.id, process.env.SECRET, (err, token) => res.json({
-			token,
-		}));
+		jwt.sign(
+			{ name: response.name, id: response.id },
+			process.env.SECRET,
+			(err, token) =>
+				res.json({
+					token,
+				}),
+		);
 	} else {
 		return res.json({
 			error: 401,
