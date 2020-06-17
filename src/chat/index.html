@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Socket.IO chat</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				font: 13px Helvetica, Arial;
+			}
+			form {
+				background: #000;
+				padding: 3px;
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+			}
+			form input {
+				border: 0;
+				padding: 10px;
+				width: 90%;
+				margin-right: 0.5%;
+			}
+			form button {
+				width: 9%;
+				background: rgb(130, 224, 255);
+				border: none;
+				padding: 10px;
+			}
+			#messages {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			#messages li {
+				padding: 5px 10px;
+			}
+			#messages li:nth-child(odd) {
+				background: #eee;
+			}
+		</style>
+	</head>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script>
+		$(function () {
+			const token =
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiU2FiaW5lIiwiaWQiOiIxOGI0MjI2Mi1iZjNlLTQwYjYtODllNC1iZDc1ODg4N2Y0MDgiLCJpYXQiOjE1OTI0MzI3MTF9.y-l54buBpahnzXQyl8DNfs8EpHv9xv9lkeU1TSnVfv8';
+
+			const match_id = 'b21c29b2-bfbf-4c01-b8c4-d0c612938c8e';
+
+			const socket = io({
+				query: {
+					token,
+					match_id,
+				},
+			});
+
+			$('form').submit(function (event) {
+				event.preventDefault();
+				socket.emit('chat message', { message: $('#m').val() });
+				$('#m').val('');
+				return false;
+			});
+
+			socket.on('users', (list) => {
+				$(`
+				<h1>Usuários: ${list.connected.length}<h1>
+
+				`).appendTo($('#users'));
+				console.log(list);
+
+				console.log(list.connected);
+			});
+
+			socket.on('chat message', (content) => {
+				$(`
+				<li>
+					<p>${content.name} says: </p>
+					<p>${content.message}</p>
+					</li>
+				`).appendTo($('#messages'));
+			});
+		});
+	</script>
+	<body>
+		<ul id="users"></ul>
+		<ul id="messages"></ul>
+		<form action="">
+			<input id="m" autocomplete="off" /><button>Send</button>
+		</form>
+	</body>
+</html>

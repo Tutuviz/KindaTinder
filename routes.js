@@ -10,6 +10,9 @@ const sessionController = require('./src/session/sessionControllers');
 
 const uploadMiddleware = require('./src/utils/upload/multer');
 
+const chatController = require('./src/chat/controller');
+const chatMiddleware = require('./src/chat/middleware');
+
 const routes = Router();
 
 routes.post(
@@ -101,6 +104,20 @@ routes.post(
 	userMiddleware.verifyPremium,
 	premiumControllers.payment,
 );
+
+routes.post(
+	'/chat/:match_id',
+	sessionMiddleware.verifyToken,
+	userControllers.sendMessages,
+);
+
+routes.get('/chat', chatController.algo2);
+
+// routes.get(
+// 	'/chat/:match_id',
+// 	sessionMiddleware.verifyToken,
+// 	userControllers.getMessages,
+// );
 
 routes.post('/auth', sessionController.auth);
 
