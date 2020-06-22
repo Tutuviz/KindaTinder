@@ -7,7 +7,7 @@ const socket_io = (io) => {
 	io.use(checkToken);
 	io.use(checkMatch);
 	io.on('connection', (socket) => {
-		// verificar duplicidade
+		// verificar duplicidade de id
 
 		socket.join(socket.handshake.query.match_id);
 
