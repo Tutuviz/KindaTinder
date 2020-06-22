@@ -388,12 +388,6 @@ const viewMessage = async (match_id, sender_id) => {
 			`,
 			[match_id],
 		);
-		const { algo } = await Pool.query(
-			`
-			SELECT msg, sender_id FROM messages WHERE match_id = $1 AND sender_id = $2 AND delivered = false ORDER BY datetime DESC LIMIT 20
-			`,
-			[match_id],
-		);
 		await Pool.query(
 			`
 			UPDATE messages SET delivered = true WHERE match_id = $1 AND sender_id = $2 AND delivered = false

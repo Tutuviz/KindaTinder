@@ -4,6 +4,7 @@ const User = require('../user/userModel');
 
 const verifyPassword = async (password, hash) => bcrypt.compare(password, hash);
 
+// eslint-disable-next-line consistent-return
 const auth = async (req, res) => {
 	const { email, password } = req.body;
 
@@ -25,10 +26,9 @@ const auth = async (req, res) => {
 		jwt.sign(
 			{ name: response.name, id: response.id },
 			process.env.SECRET,
-			(err, token) =>
-				res.json({
-					token,
-				}),
+			(err, token) => res.json({
+				token,
+			}),
 		);
 	} else {
 		return res.json({

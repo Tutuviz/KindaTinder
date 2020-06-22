@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const jwt = require('jsonwebtoken');
 const { getMatchById } = require('../user/userModel');
 
@@ -19,6 +20,7 @@ const checkToken = async (socket, next) => {
 	return next();
 };
 
+// eslint-disable-next-line consistent-return
 const checkMatch = async (socket, next) => {
 	if (!socket.handshake.query) {
 		return next(new Error('Authentication Error'));
@@ -28,4 +30,4 @@ const checkMatch = async (socket, next) => {
 	}
 };
 
-module.exports = { checkToken };
+module.exports = { checkToken, checkMatch };

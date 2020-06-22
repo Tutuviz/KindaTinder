@@ -534,7 +534,7 @@ const getMessages = async (req, res) => {
 
 	const response = await User.viewMessage(match.id);
 
-	const batata = response.reverse();
+	// const batata = response.reverse();
 
 	return res.json(response);
 };

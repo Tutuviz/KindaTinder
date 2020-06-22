@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // msg, connect, disconnect
 const { checkToken, checkMatch } = require('./middleware');
 
@@ -34,7 +35,7 @@ const socket_io = (io) => {
 			});
 		});
 
-		socket.on('disconnect', (e) => {
+		socket.on('disconnect', () => {
 			connected = connected.filter(
 				(element) => element !== socket.verify.id,
 			);

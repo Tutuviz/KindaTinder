@@ -11,7 +11,7 @@ const sessionController = require('./src/session/sessionControllers');
 const uploadMiddleware = require('./src/utils/upload/multer');
 
 const chatController = require('./src/chat/controller');
-const chatMiddleware = require('./src/chat/middleware');
+// const chatMiddleware = require('./src/chat/middleware');
 
 const routes = Router();
 
