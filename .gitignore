@@ -4,7 +4,7 @@ node_modules/
 
 uploads/
 
-.eslintrc.js
+# .eslintrc.js
 
 .prettierrc
 
