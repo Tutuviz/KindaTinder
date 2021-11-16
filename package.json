@@ -23,7 +23,7 @@
 	"dependencies": {
 		"@sentry/node": "^5.16.1",
 		"@tutuviz/pagar.me": "^0.5.1",
-		"aws-sdk": "^2.691.0",
+		"aws-sdk": "^2.814.0",
 		"bcryptjs": "^2.4.3",
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
